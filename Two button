@@ -1,0 +1,135 @@
+/*
+Debounce
+
+Each time the input pin goes from LOW to HIGH (e.g. because of a push-button
+press), the output pin is toggled from LOW to HIGH or HIGH to LOW. There's
+a minimum delay between toggles to debounce the circuit (i.e. to ignore
+noise).
+
+The circuit:
+* LED attached from pin 13 to ground
+* pushbutton attached from pin 2 to +5V
+* 10K resistor attached from pin 2 to ground
+
+* Note: On most Arduino boards, there is already an LED on the board
+connected to pin 13, so you don't need any extra components for this example.
+
+
+created 21 November 2006
+by David A. Mellis
+modified 30 Aug 2011
+by Limor Fried
+modified 28 Dec 2012
+by Mike Walters
+modified 30 Aug 2016
+by Arturo Guadalupi
+
+
+This example code is in the public domain.
+
+http://www.arduino.cc/en/Tutorial/Debounce
+*/
+
+// constants won't change. They're used here to
+// set pin numbers:
+//const int buttonPins[]={A0,A1}
+//#define NUMBUTTONS sizeof(buttonPins)
+
+//Button constants and variables
+const int buttonPin10 = A0; // the number of the pushbutton pin
+const int buttonPin20=A1;
+
+int buttonState10; // the current reading from the input pin
+int buttonState20;
+
+int lastButtonState10 = LOW; // the previous reading from the input pin
+int lastButtonState20 = LOW;
+
+const int ledPin1 = 8; // the number of the LED pin
+
+// Variables will change:
+int ledState = HIGH; // the current state of the output pin
+
+int count=0;
+
+// the following variables are unsigned long's because the time, measured in miliseconds,
+// will quickly become a bigger number than can be stored in an int.
+unsigned long lastDebounceTime = 0; // the last time the output pin was toggled
+unsigned long debounceDelay = 50; // the debounce time; increase if the output flickers
+
+void setup() {
+pinMode(buttonPin10, INPUT);
+pinMode(buttonPin20, INPUT);
+ 
+pinMode(ledPin1, OUTPUT);
+Serial.begin(9600);
+// set initial LED state
+digitalWrite(ledPin1, ledState);
+}
+
+void loop() {
+// read the state of the switch into a local variable:
+int reading10 = digitalRead(buttonPin10);
+int reading20= digitalRead(buttonPin20);
+ 
+// check to see if you just pressed the button
+// (i.e. the input went from LOW to HIGH), and you've waited
+// long enough since the last press to ignore any noise:
+
+// If the switch changed, due to noise or pressing:
+if (reading10 != lastButtonState10 || reading20 !=lastButtonState20) 
+{
+// reset the debouncing timer
+lastDebounceTime = millis();
+}
+
+if ((millis() - lastDebounceTime) > debounceDelay) 
+{
+// whatever the reading is at, it's been there for longer
+// than the debouznce delay, so take it as the actual current state:
+
+// if the button state has changed:
+if (reading10 != buttonState10) 
+{
+buttonState10 = reading10;
+
+// only toggle the LED if the new button state is HIGH
+if (buttonState10 == HIGH) 
+{
+count+=10;
+Serial.println(count);
+ledState = !ledState;
+}
+if (count>=100)
+{
+count=0;
+}
+}
+if (reading20 != buttonState20) 
+{
+buttonState20 = reading20;
+
+// only toggle the LED if the new button state is HIGH
+if (buttonState20 == HIGH) 
+{
+count+=20;
+Serial.println(count);
+ledState = !ledState;
+}
+if (count>=100)
+{
+count=0;
+}
+}
+}
+
+// set the LED:
+digitalWrite(ledPin1, ledState);
+
+// save the reading. Next time through the loop,
+// it'll be the lastButtonState:
+lastButtonState10 = reading10;
+lastButtonState20=reading20;
+}
+
+void beingSum(){}
